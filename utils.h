@@ -2,7 +2,12 @@
 #define UTILS_H
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <math.h>
+#include <float.h>
+
+static const float NEAR = 0.00001f;
+static const float FAR = 50.0f;
 
 typedef struct {
 	float x;
@@ -16,9 +21,14 @@ typedef struct {
 } Vec2;
 
 typedef struct {
+	Vec3 emissive;
+	Vec3 albedo;
+} Material;
+
+typedef struct {
 	Vec3 position;
 	Vec3 normal;
-	Vec3 color;
+	Material material;
 	float distance;
 } Hit;
 
@@ -30,7 +40,22 @@ typedef struct {
 typedef struct {
 	Vec3 position;
 	float radius;
+	Material material;
 } Sphere;
+
+typedef enum {
+	OBJECT_SPHERE,
+	OBJECT_QUAD
+} Object_Type;
+
+typedef struct {
+	Object_Type type;
+	union {
+		Sphere sphere;
+	} data;
+} Object;
+
+
 
 static inline float dot(Vec3 a, Vec3 b)
 {
@@ -73,9 +98,22 @@ static inline Vec3 clamp(Vec3 a)
 	return (Vec3){r, g, b};
 }
 
-Vec3 normalize(Vec3 a);
-
-
-bool Check_Sphere(const Sphere *sphere, const Ray *ray, Hit *hit);
+void normalize(Vec3* a);
+static inline Vec3 normalized(Vec3 a)
+{
+	float length = sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+	if (length > 0.0f) {
+		return (Vec3){
+			a.x / length,
+			a.y / length,
+			a.z / length
+		};
+	};
+	return (Vec3){
+		0.0f,
+		0.0f,
+		0.0f
+	};
+}
 
 #endif
