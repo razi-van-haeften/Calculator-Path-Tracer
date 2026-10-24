@@ -1,4 +1,16 @@
 #include "path_trace.h"
+#include "utils.h"
+#include <float.h>
+
+// Ray Get_Ray(const Camera *camera, int width, int height)
+// {
+// 	return (Ray){
+// 		(Vec3){
+//
+// 		},
+//
+// 	};
+// }
 
 bool Check_Sphere(const Sphere *sphere, const Ray *ray, Hit *hit)
 {
@@ -11,7 +23,7 @@ bool Check_Sphere(const Sphere *sphere, const Ray *ray, Hit *hit)
 
 	if (D < 0.0f)
 	{
-		return false;;
+		return false;
 	}
 
 	float t = (-B - sqrt(D)) / (2.0f * A);
@@ -21,16 +33,16 @@ bool Check_Sphere(const Sphere *sphere, const Ray *ray, Hit *hit)
 	}
 
 	hit->distance = t;
-	hit->position = add(ray->position, multiply(normalized(ray->direction), t));
-	hit->normal = subtract(hit->position, sphere->position);
+	hit->position = add(ray->position, extrapolate(ray->direction, t));
+	hit->normal = normalized(subtract(hit->position, sphere->position));
 	hit->material = sphere->material;
 
 	return true;
 }
 
-void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *throughput, Vec3 *final_color)
-{
-	
+void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *throughput, Vec3 *final_color, uint *seed)
+{	
+	if(depth <= 0) return;
 	Hit closest_hit;
 	closest_hit.distance = FLT_MAX;
 	Hit tmp_hit;
@@ -38,13 +50,25 @@ void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *th
 	{
 		if(Check_Sphere(&scene[i].data.sphere, ray, &tmp_hit))
 		{
-			if(tmp_hit.distance < closest_hit.distance)
+			if(tmp_hit.distance < closest_hit.distance && tmp_hit.distance > NEAR)
 			{
 				closest_hit = tmp_hit;
 			}
-		} else {
-			return;
 		}
-		*final_color = tmp_hit.normal;
 	}
+	if(closest_hit.distance == FLT_MAX)
+	{
+		float d = (normalized(ray->direction).y + 1.0f) * 0.5f;
+		Vec3 sky = add(extrapolate((Vec3){1.0f, 1.0f, 1.0f}, 1.0f-d), extrapolate((Vec3){0.5f, 0.7f, 1.0f}, d));
+		*final_color = add(*final_color, multiply(*throughput, sky));	
+		return;
+	}
+	*final_color = add(*final_color, multiply(closest_hit.material.emissive, *throughput));
+	*throughput = multiply(*throughput, closest_hit.material.albedo);	
+
+	ray->position = closest_hit.position;
+	ray->direction = normalized(add(closest_hit.normal, random_unit_Vec3(seed)));
+	//here we go again
+	Trace(ray, scene, scene_size, depth - 1, throughput, final_color, seed);
+	return;
 }
