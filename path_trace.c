@@ -84,7 +84,12 @@ void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *th
 	*throughput = multiply(*throughput, closest_hit.material.albedo);	
 
 	ray->position = closest_hit.position;
-	ray->direction = normalized(add(closest_hit.normal, random_unit_Vec3(seed)));
+	if(closest_hit.material.specular > random_unit_float(seed))
+	{
+		ray->direction = subtract(ray->direction, extrapolate(closest_hit.normal, 2.0f * dot(ray->direction, closest_hit.normal)));
+	} else {
+		ray->direction = normalized(add(closest_hit.normal, random_unit_Vec3(seed)));
+	}
 	//here we go again
 	Trace(ray, scene, scene_size, depth - 1, throughput, final_color, seed);
 	return;

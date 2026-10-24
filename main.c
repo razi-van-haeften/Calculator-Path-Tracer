@@ -4,11 +4,11 @@
 
 #define TEST_FILE "test.ppm"
 
-int WIDTH = 512;
-int HEIGHT = 384;
+int WIDTH = 1024;
+int HEIGHT = 896;
 float ASPECT_RATIO;
 uint SEED = 67;
-int MAX_SAMPLES = 12;
+int MAX_SAMPLES = 24;
 int MAX_DEPTH = 12;
 float GAMMA = 2.0f;
 
@@ -25,7 +25,8 @@ Sphere sphere = {
 	1.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){0.5f, 0.5f, 0.5f}
+		(Vec3){0.5f, 0.5f, 0.5f},
+		0.0f
 	}
 };
 Sphere sphere2 = {
@@ -33,7 +34,8 @@ Sphere sphere2 = {
 	1.5f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){1.0f, 0.7f, 0.5f}
+		(Vec3){1.0f, 0.2f, 0.1f},
+		1.0f
 	}
 };
 Sphere sphere3 = {
@@ -41,7 +43,8 @@ Sphere sphere3 = {
 	4.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){0.6f, 0.9f, 0.5f}
+		(Vec3){1.0f, 1.0f, 1.0f},
+		1.0f
 	}
 };
 
