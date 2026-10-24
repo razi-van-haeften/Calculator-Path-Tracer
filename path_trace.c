@@ -2,15 +2,32 @@
 #include "utils.h"
 #include <float.h>
 
-// Ray Get_Ray(const Camera *camera, int width, int height)
-// {
-// 	return (Ray){
-// 		(Vec3){
-//
-// 		},
-//
-// 	};
-// }
+Ray Get_Ray(int screen_x, int screen_y, int width, int height, float aspect_ratio, const Camera *camera, uint *seed)
+{
+	float dx = screen_x + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
+	float dy = screen_y + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
+
+	Vec2 uv = {
+		dx / (width - 1) * 2.0f - 1.0f,
+		(1.0f - dy / (height - 1)) * 2.0f -1.0f
+	};
+
+	// uv.y /= aspect_ratio;
+	//
+	Vec3 Z = normalized(camera->direction);
+	Vec3 up = (Vec3){0.0f, 1.0f, 0.0f};
+	Vec3 X = normalized(cross(up, Z));
+	Vec3 Y = cross(Z, X);	
+	X = extrapolate(X, -1.0f);
+
+	Vec3 z = extrapolate(Z, camera->FOV_distance);
+	Vec3 direction = add(add(z, extrapolate(Y, uv.y / aspect_ratio)), extrapolate(X, uv.x));
+
+	return (Ray){
+		camera->position,
+		direction
+	};
+}
 
 bool Check_Sphere(const Sphere *sphere, const Ray *ray, Hit *hit)
 {

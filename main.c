@@ -6,11 +6,19 @@
 
 int WIDTH = 512;
 int HEIGHT = 384;
-uint seed = 67;
-int max_samples = 20;
-float GAMMA = 1.1f;
-//RADIANS
-float FOV = 3.1415f / 2.3f;
+float ASPECT_RATIO;
+uint SEED = 67;
+int MAX_SAMPLES = 12;
+int MAX_DEPTH = 12;
+float GAMMA = 2.0f;
+
+Camera CAMERA = {
+	(Vec3){0.0f, 0.0f, 0.0f},
+	(Vec3){0.0f, 0.0f, -1.0f},
+	3.1415f / 2.3f,
+	0.0f,
+	0.5f
+};
 
 Sphere sphere = {
 	(Vec3){0.0f, 0.0f, -6.0f},
@@ -41,9 +49,9 @@ int main(){
 
 	printf("P6\n%d %d\n255\n", WIDTH, HEIGHT);
 
-	// PATH TRACING
-	float aspect_ratio = (float)WIDTH / (float)HEIGHT;
-	float camera_distance = 1.0f / tan(FOV * 0.5f);
+	// PATH tracing
+	ASPECT_RATIO = (float)WIDTH / HEIGHT;
+	CAMERA.FOV_distance = 1.0f / tan(CAMERA.FOV * 0.5f);
 
 	Object scene[3];
 	scene[0].type = OBJECT_SPHERE;
@@ -58,28 +66,21 @@ int main(){
 	for (screen_y = 0; screen_y < HEIGHT; screen_y += 1){
 		for (screen_x = 0; screen_x < WIDTH; screen_x += 1){
 			Vec3 total_color = {0.0f, 0.0f, 0.0f};
-			for(int sample = 0; sample < max_samples; sample += 1)
+			for(int sample = 0; sample < MAX_SAMPLES; sample += 1)
 			{
 				Vec3 final_color = {0.0f, 0.0f, 0.0f};
 				Vec3 throughput = {1.0f, 1.0f, 1.0f};
-				Vec2 uv = {
-					((float)screen_x / ((float)WIDTH - 1.0f)) * 2.0f - 1.0f + (random_unit_float(&seed) - 0.5f) / 500.0f,
-					(1.0f - (float)screen_y / ((float)HEIGHT - 1.0f)) * 2.0f - 1.0f + (random_unit_float(&seed) - 0.5f) / 500.0f
-				};
-				// Z+ FORWARD
-				Ray ray = {
-					(Vec3){0.0f, 0.0f, 0.0f},
-					(Vec3){uv.x, uv.y / aspect_ratio, -camera_distance}
-				};
 
-				Trace(&ray, scene, 3, 6, &throughput, &final_color, &seed);
+				Ray ray = Get_Ray(screen_x, screen_y, WIDTH, HEIGHT, ASPECT_RATIO, &CAMERA, &SEED);
+
+				Trace(&ray, scene, 3, MAX_DEPTH, &throughput, &final_color, &SEED);
 
 				total_color = add(total_color, final_color);
 			}
 
-			float R = powf(total_color.x / (float)max_samples, 1.0f/GAMMA);
-			float G = powf(total_color.y / (float)max_samples, 1.0f/GAMMA);
-			float B = powf(total_color.z / (float)max_samples, 1.0f/GAMMA);
+			float R = powf(total_color.x / (float)MAX_SAMPLES, 1.0f/GAMMA);
+			float G = powf(total_color.y / (float)MAX_SAMPLES, 1.0f/GAMMA);
+			float B = powf(total_color.z / (float)MAX_SAMPLES, 1.0f/GAMMA);
 
 			
 			unsigned char pixel[3] = {
