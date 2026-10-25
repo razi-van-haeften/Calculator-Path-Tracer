@@ -8,7 +8,7 @@ DEPS := utils.c path_trace.c
 all: $(PPM)
 
 $(BIN): $(MAIN) $(DEPS)
-	clang $(MAIN) $(DEPS) -o $(BIN)
+	gcc -O3 -march=native -flto -ffast-math -DNDEBUG $(MAIN) $(DEPS) -o $(BIN) -lm
 
 $(PPM): $(BIN)
 	./$(BIN) > $(PPM)

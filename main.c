@@ -3,21 +3,22 @@
 #include "utils.h"
 
 #define TEST_FILE "test.ppm"
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 
-int WIDTH = 1024;
-int HEIGHT = 896;
+int WIDTH = 512;
+int HEIGHT = 512;
 float ASPECT_RATIO;
 uint SEED = 67;
-int MAX_SAMPLES = 24;
-int MAX_DEPTH = 12;
+int MAX_SAMPLES = 256;
+int MAX_DEPTH = 8;
 float GAMMA = 2.0f;
 
 Camera CAMERA = {
-	(Vec3){0.0f, 0.0f, 0.0f},
-	(Vec3){0.0f, 0.0f, -1.0f},
-	3.1415f / 2.3f,
+	(Vec3){0.0f, 2.0f, 6.0f},
+	(Vec3){0.0f, -0.4f, -1.0f},
+	3.1415f / 2.5f,
 	0.0f,
-	0.5f
+	0.55f
 };
 
 Sphere sphere = {
@@ -25,26 +26,32 @@ Sphere sphere = {
 	1.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){0.5f, 0.5f, 0.5f},
-		0.0f
+		(Vec3){1.0f, 1.0f, 1.0f},
+		0.15f,
+		0.95f,
+		(Vec3){1.0f, 1.0f, 1.0f}
 	}
 };
 Sphere sphere2 = {
-	(Vec3){3.0f, 0.0f, -5.0f},
-	1.5f,
+	(Vec3){4.0f, 2.0f, -5.0f},
+	0.75f,
 	(Material){
-		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){1.0f, 0.2f, 0.1f},
-		1.0f
+		(Vec3){5.0f, 4.0f, 3.5f},
+		(Vec3){1.0f,0.8f, 0.7f},
+		0.0f,
+		1.0f,
+		(Vec3){1.0f, 1.0f, 1.0f}
 	}
 };
 Sphere sphere3 = {
-	(Vec3){-1.0f, -5.0f, -5.0f},
-	4.0f,
+	(Vec3){-1.0f, -13.0f, -5.0f},
+	12.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){1.0f, 1.0f, 1.0f},
-		1.0f
+		(Vec3){1.0f, 0.8f, 0.75f},
+		1.0f,
+		0.95f,
+		(Vec3){1.0f, 1.0f, 1.0f}
 	}
 };
 
@@ -81,10 +88,9 @@ int main(){
 				total_color = add(total_color, final_color);
 			}
 
-			float R = powf(total_color.x / (float)MAX_SAMPLES, 1.0f/GAMMA);
-			float G = powf(total_color.y / (float)MAX_SAMPLES, 1.0f/GAMMA);
-			float B = powf(total_color.z / (float)MAX_SAMPLES, 1.0f/GAMMA);
-
+			float R = powf(min(total_color.x / (float)MAX_SAMPLES, 1.0f), 1.0f/GAMMA);
+			float G = powf(min(total_color.y / (float)MAX_SAMPLES, 1.0f), 1.0f/GAMMA);
+			float B = powf(min(total_color.z / (float)MAX_SAMPLES, 1.0f), 1.0f/GAMMA);
 			
 			unsigned char pixel[3] = {
 				(unsigned char)(255.0f * R),

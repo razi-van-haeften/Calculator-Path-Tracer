@@ -27,7 +27,9 @@ typedef struct {
 typedef struct {
 	Vec3 emissive;
 	Vec3 albedo;//0 - 1
-	float specular;//0 - 1
+	float specular_probability;//0 - 1
+	float smoothness;//0 - 1
+	Vec3 specular_color;
 } Material;
 
 typedef struct {
@@ -92,6 +94,15 @@ static inline Vec3 add(Vec3 a, Vec3 b)
 		a.x + b.x,
 		a.y + b.y,
 		a.z + b.z
+	};
+}
+
+static inline Vec3 blend(Vec3 a, Vec3 b, float t)
+{
+	return (Vec3){
+		a.x+(b.x-a.x) * t,
+		a.y+(b.y-a.y) * t,
+		a.z+(b.z-a.z) * t
 	};
 }
 
