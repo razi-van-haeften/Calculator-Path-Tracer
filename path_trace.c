@@ -24,10 +24,10 @@ Ray Get_Ray(int screen_x, int screen_y, int width, int height, float aspect_rati
 
 	Vec3 z = extrapolate(Z, camera->FOV_distance);
 	Vec3 direction = add(add(z, extrapolate(Y, uv.y / aspect_ratio)), extrapolate(X, uv.x));
-	normalize(&direction);
+	// normalize(&direction);
 
-	Vec3 target = add(camera->position, extrapolate(direction, 9.35f));
-	Vec3 position = add(camera->position, extrapolate(cross(normalized(camera->direction), random_unit_Vec3(seed)), 2.6f * random_unit_float(seed)));
+	Vec3 target = add(camera->position, extrapolate(direction, camera->focal_distance / camera->FOV_distance));
+	Vec3 position = add(camera->position, extrapolate(cross(normalized(camera->direction), random_unit_Vec3(seed)), camera->defocus * random_unit_float(seed)));
 	direction = subtract(target, position);
 
 	return (Ray){
@@ -82,10 +82,10 @@ void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *th
 	}
 	if(closest_hit.distance == FLT_MAX)
 	{
-		float d = (normalized(ray->direction).y + 1.0f) * 0.5f;
-		Vec3 sky = add(extrapolate((Vec3){1.0f, 1.0f, 1.0f}, 1.0f-d), extrapolate((Vec3){0.5f, 0.7f, 1.0f}, d));
-		sky = extrapolate(sky, 0.7f);
-		*final_color = add(*final_color, multiply(*throughput, sky));	
+		// float d = (normalized(ray->direction).y + 1.0f) * 0.5f;
+		// Vec3 sky = add(extrapolate((Vec3){1.0f, 1.0f, 1.0f}, 1.0f-d), extrapolate((Vec3){0.5f, 0.7f, 1.0f}, d));
+		// sky = extrapolate(sky, 0.7f);
+		// *final_color = add(*final_color, multiply(*throughput, sky));	
 		return;
 	}
 

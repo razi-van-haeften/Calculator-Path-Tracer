@@ -48,6 +48,7 @@ typedef struct {
 	Vec3 direction;
 	float FOV;
 	float FOV_distance;
+	float focal_distance;
 	float defocus;
 } Camera;
 
