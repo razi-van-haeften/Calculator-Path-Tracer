@@ -4,8 +4,10 @@
 
 Ray Get_Ray(int screen_x, int screen_y, int width, int height, float aspect_ratio, const Camera *camera, uint *seed)
 {
-	float dx = screen_x + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
-	float dy = screen_y + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
+	// float dx = screen_x + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
+	// float dy = screen_y + (random_unit_float(seed) - 0.5f) * 2.0f * camera->defocus;
+	float dx = (float)screen_x;
+	float dy = (float)screen_y;
 
 	Vec2 uv = {
 		dx / (float)(width - 1) * 2.0f - 1.0f,
@@ -22,9 +24,14 @@ Ray Get_Ray(int screen_x, int screen_y, int width, int height, float aspect_rati
 
 	Vec3 z = extrapolate(Z, camera->FOV_distance);
 	Vec3 direction = add(add(z, extrapolate(Y, uv.y / aspect_ratio)), extrapolate(X, uv.x));
+	normalize(&direction);
+
+	Vec3 target = add(camera->position, extrapolate(direction, 9.35f));
+	Vec3 position = add(camera->position, extrapolate(cross(normalized(camera->direction), random_unit_Vec3(seed)), 2.6f * random_unit_float(seed)));
+	direction = subtract(target, position);
 
 	return (Ray){
-		camera->position,
+		position,
 		direction
 	};
 }
@@ -95,7 +102,13 @@ void Trace(Ray *ray, const Object *scene, size_t scene_size, int depth, Vec3 *th
 
 
 	*final_color = add(*final_color, multiply(closest_hit.material.emissive, *throughput));
-	*throughput = multiply(*throughput, blend(closest_hit.material.albedo, closest_hit.material.specular_color, is_specular_bounce));	
+
+	if(is_specular_bounce)
+	{
+		*throughput = multiply(*throughput, closest_hit.material.specular_color);
+	} else {
+		*throughput = multiply(*throughput, closest_hit.material.albedo);
+	}
 
 	//here we go again
 	Trace(ray, scene, scene_size, depth - 1, throughput, final_color, seed);

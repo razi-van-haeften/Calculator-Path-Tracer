@@ -6,7 +6,6 @@
 #include <math.h>
 #include <float.h>
 
-
 static const float PI = 3.1415;
 static const float NEAR = 0.00001f;
 static const float FAR = 50.0f;

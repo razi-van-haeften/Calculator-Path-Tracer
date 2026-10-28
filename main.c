@@ -6,23 +6,23 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 int WIDTH = 512;
-int HEIGHT = 512;
+int HEIGHT = 384;
 float ASPECT_RATIO;
 uint SEED = 67;
-int MAX_SAMPLES = 256;
-int MAX_DEPTH = 8;
+int MAX_SAMPLES = 512;
+int MAX_DEPTH = 16;
 float GAMMA = 2.0f;
 
 Camera CAMERA = {
-	(Vec3){0.0f, 2.0f, 6.0f},
-	(Vec3){0.0f, -0.4f, -1.0f},
-	3.1415f / 2.5f,
+	(Vec3){0.0f, 0.0f, 6.0f},
+	(Vec3){0.0f, 0.0f, -1.0f},
+	3.1415f / 3.2f,
 	0.0f,
-	0.55f
+	1.0f
 };
 
 Sphere sphere = {
-	(Vec3){0.0f, 0.0f, -6.0f},
+	(Vec3){0.0f, 0.0f, -4.0f},
 	1.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
@@ -33,30 +33,29 @@ Sphere sphere = {
 	}
 };
 Sphere sphere2 = {
-	(Vec3){4.0f, 2.0f, -5.0f},
+	(Vec3){4.0f, 2.0f, -3.0f},
 	0.75f,
 	(Material){
-		(Vec3){5.0f, 4.0f, 3.5f},
-		(Vec3){1.0f,0.8f, 0.7f},
+		(Vec3){5.0f, 4.4f, 4.0f},
+		(Vec3){0.0f,0.0f, 0.0f},
 		0.0f,
 		1.0f,
 		(Vec3){1.0f, 1.0f, 1.0f}
 	}
 };
 Sphere sphere3 = {
-	(Vec3){-1.0f, -13.0f, -5.0f},
-	12.0f,
+	(Vec3){-3.0f, 0.0f, -1.0f},
+	1.0f,
 	(Material){
 		(Vec3){0.0f, 0.0f, 0.0f},
-		(Vec3){1.0f, 0.8f, 0.75f},
+		(Vec3){1.0f, 0.95f, 0.2f},
+		0.2f,
 		1.0f,
-		0.95f,
 		(Vec3){1.0f, 1.0f, 1.0f}
 	}
 };
 
 int main(){
-
 	printf("P6\n%d %d\n255\n", WIDTH, HEIGHT);
 
 	// PATH tracing
